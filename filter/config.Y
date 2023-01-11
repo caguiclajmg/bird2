@@ -305,7 +305,7 @@ CF_KEYWORDS(FUNCTION, PRINT, PRINTN, UNSET, RETURN,
 	IF, THEN, ELSE, CASE,
 	FOR, IN, DO,
 	TRUE, FALSE, RT, RO, UNKNOWN, GENERIC,
-	FROM, GW, NET, MASK, PROTO, SOURCE, SCOPE, DEST, IFNAME, IFINDEX, WEIGHT, GW_MPLS,
+	FROM, GW, NET, MASK, MASKIP, PROTO, SOURCE, SCOPE, DEST, IFNAME, IFINDEX, WEIGHT, GW_MPLS,
 	PREFERENCE,
 	ROA_CHECK, ASN, SRC, DST,
 	IS_V4, IS_V6,
@@ -835,6 +835,7 @@ term:
  | term '.' SRC { $$ = f_new_inst(FI_NET_SRC, $1); }
  | term '.' DST { $$ = f_new_inst(FI_NET_DST, $1); }
  | term '.' MASK '(' term ')' { $$ = f_new_inst(FI_IP_MASK, $1, $5); }
+ | term '.' MASKIP '(' term ')' { $$ = f_new_inst(FI_IP_MASKIP, $1, $5); }
  | term '.' FIRST { $$ = f_new_inst(FI_AS_PATH_FIRST, $1); }
  | term '.' LAST  { $$ = f_new_inst(FI_AS_PATH_LAST, $1); }
  | term '.' LAST_NONAGGREGATED  { $$ = f_new_inst(FI_AS_PATH_LAST_NAG, $1); }
