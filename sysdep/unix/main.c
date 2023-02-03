@@ -34,6 +34,7 @@
 #include "nest/protocol.h"
 #include "nest/iface.h"
 #include "nest/cli.h"
+#include "nest/http.h"
 #include "nest/locks.h"
 #include "conf/conf.h"
 #include "filter/filter.h"
@@ -897,6 +898,7 @@ main(int argc, char **argv)
   rt_init();
   if_init();
 //  roa_init();
+  http_init();
   config_init();
 
   uid_t use_uid = get_uid(use_user);

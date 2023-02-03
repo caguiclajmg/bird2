@@ -48,6 +48,12 @@ AC_ARG_ENABLE([pthreads],
   [enable_pthreads=try]
 )
 
+AC_ARG_ENABLE([webhooks],
+  [AS_HELP_STRING([--enable-webhooks], [enable webhook support @<:@no@:>@])],
+  [],
+  [enable_webhooks=no]
+)
+
 AC_ARG_ENABLE([libssh],
   [AS_HELP_STRING([--enable-libssh], [enable LibSSH support in RPKI @<:@try@:>@])],
   [],
@@ -281,6 +287,33 @@ AC_SUBST([iproutedir])
 DAEMON_LIBS=
 AC_SUBST(DAEMON_LIBS)
 
+if test "$enable_webhooks" != no ; then
+  AC_CHECK_HEADER([curl/curl.h], [true], [have_libcurl=no], [ ])
+  AC_CHECK_LIB([curl], [curl_global_init], [true], [have_libcurl=no])
+  if test "$have_libcurl" != no ; then
+    AC_DEFINE([HAVE_LIBCURL], [1], [Define to 1 if you have the `curl' library (-lcurl).])
+  else
+    if test "$enable_webhooks" = yes ; then
+      AC_MSG_ERROR([Libcurl not available.])
+    fi
+  fi
+
+  AC_CHECK_HEADER([json-c/json_tokener.h], [true], [have_jsonc=no], [ ])
+  AC_CHECK_LIB([json-c], [json_object_new_object], [true], [have_jsonc=no])
+  if test "$have_jsonc" == no ; then
+    if test "$enable_webhooks" = yes ; then
+      AC_MSG_ERROR([Libjson-c not available.])
+    fi
+  else
+    AC_DEFINE([HAVE_LIBJSONC], [1], [Define to 1 if you have the `json-c' library (-ljson-c).])
+  fi
+
+  if test "$have_libcurl" != no -a "$have_jsonc" != no ; then
+    DAEMON_LIBS="-lcurl -ljson-c $DAEMON_LIBS"
+    proto_webhook=webhook
+  fi
+fi
+
 if test "$enable_libssh" != no ; then
   AC_CHECK_HEADER([libssh/libssh.h], [true], [fail=yes], [ ])
   AC_CHECK_LIB([ssh], [ssh_connect], [true], [fail=yes])
@@ -312,7 +345,7 @@ if test "$enable_mpls_kernel" != no ; then
   fi
 fi
 
-all_protocols="$proto_bfd babel bgp mrt ospf perf pipe radv rip rpki static"
+all_protocols="$proto_bfd $proto_webhook babel bgp mrt ospf perf pipe radv rip rpki static"
 
 all_protocols=`echo $all_protocols | sed 's/ /,/g'`
 
@@ -330,6 +363,7 @@ AH_TEMPLATE([CONFIG_RADV],	[RAdv protocol])
 AH_TEMPLATE([CONFIG_RIP],	[RIP protocol])
 AH_TEMPLATE([CONFIG_RPKI],	[RPKI protocol])
 AH_TEMPLATE([CONFIG_STATIC],	[Static protocol])
+AH_TEMPLATE([CONFIG_WEBHOOK],	[Webhook protocol])
 
 AC_MSG_CHECKING([protocols])
 protocols=`echo "$with_protocols" | sed 's/,/ /g'`
@@ -483,6 +517,7 @@ AC_MSG_RESULT([        Compact tries:		$enable_compact_tries])
 AC_MSG_RESULT([        POSIX threads:		$enable_pthreads])
 AC_MSG_RESULT([        Routing protocols:	$protocols])
 AC_MSG_RESULT([        LibSSH support in RPKI:	$enable_libssh])
+AC_MSG_RESULT([        Webhooks:	$enable_webhooks])
 AC_MSG_RESULT([        Kernel MPLS support:	$enable_mpls_kernel])
 AC_MSG_RESULT([        Client:			$enable_client])
 
