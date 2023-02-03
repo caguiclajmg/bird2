@@ -1340,6 +1340,14 @@
       ipa_from_ip6(ip6_and(ipa_to_ip6(v1.val.ip), ip6_mkmask(v2.val.i))) ]]);
   }
 
+  INST(FI_IP_MASKIP, 2, 1) { /* IP.MASKIP(val) */
+    ARG(1, T_IP);
+    ARG(2, T_IP);
+    RESULT(T_IP, ip, [[ ipa_is_ip4(v1.val.ip) ?
+      ipa_from_ip4(ip4_and(ipa_to_ip4(v1.val.ip), ipa_to_ip4(v2.val.ip))) :
+      ipa_from_ip6(ip6_and(ipa_to_ip6(v1.val.ip), ipa_to_ip6(v2.val.ip))) ]]);
+  }
+
   INST(FI_PATH_PREPEND, 2, 1) {	/* Path prepend */
     ARG(1, T_PATH);
     ARG(2, T_INT);
