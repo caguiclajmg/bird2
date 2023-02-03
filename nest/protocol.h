@@ -53,6 +53,7 @@ enum protocol_class {
   PROTOCOL_RIP,
   PROTOCOL_RPKI,
   PROTOCOL_STATIC,
+  PROTOCOL_WEBHOOK,
   PROTOCOL__MAX
 };
 
@@ -103,7 +104,8 @@ void protos_dump_all(void);
 extern struct protocol
   proto_device, proto_radv, proto_rip, proto_static, proto_mrt,
   proto_ospf, proto_perf,
-  proto_pipe, proto_bgp, proto_bfd, proto_babel, proto_rpki;
+  proto_pipe, proto_bgp, proto_bfd, proto_babel, proto_rpki,
+  proto_webhook;
 
 /*
  *	Routing Protocol Instance

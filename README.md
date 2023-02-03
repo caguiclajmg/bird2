@@ -1,5 +1,17 @@
 # BIRD2
 
+## Protocols
+
+### Webhook
+
+```
+protocol webhook {
+  url "https://example.com/my-bird2-webhook";
+  ipv4 { export all; };
+  ipv6 { export all; };
+}
+```
+
 ## Filters
 
 ### maskip
